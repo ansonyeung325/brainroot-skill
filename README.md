@@ -6,7 +6,7 @@ Personal Claude Code skills.
 
 | Skill | What it does | Start it with |
 |---|---|---|
-| `helicopter` | Runs a project as small, user-approved tasks. Every step is tracked, explained before it starts, and proven with evidence after it ends. | `/helicopter` |
+| `helicopter` | Runs a project as small, user-approved tasks. Every step is tracked, explained before it starts, built in small chunks you review line by line, and proven with evidence after it ends. | `/helicopter` |
 
 ## Install
 

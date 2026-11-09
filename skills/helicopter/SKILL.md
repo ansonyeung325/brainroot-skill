@@ -1,6 +1,6 @@
 ---
 name: helicopter
-description: Run a project as small, user-approved tasks — every step tracked in a checklist, explained before it starts, and proven with evidence after it ends.
+description: Run a project as small, user-approved tasks — every step tracked in a checklist, explained before it starts, built in small chunks the user reviews line by line, and proven with evidence after it ends.
 disable-model-invocation: true
 ---
 
@@ -70,12 +70,25 @@ Before you change anything, tell the user:
 - **What** you will do — files, functions, commands.
 - **Why** — the reason, and the existing convention or tool you reuse.
 - **Impact** — what behaviour changes, what could break, what is hard to undo.
+- **Chunks** — the chunks you will build in step 7, in order: files, purpose, and size estimate for each.
 
 Use a concrete example for each point. **Gate.**
 
-#### 7. Build and verify
+#### 7. Build and verify, one chunk at a time
 
-Implement exactly the approved plan. Then verify with real evidence: run the tests, run the app, query the output.
+Implement exactly the approved plan, one chunk at a time, in the planned order. A **chunk** is one small edit with one purpose: at most about 50 changed lines in total. One chunk can touch several files when one feature needs them.
+
+For each chunk:
+
+1. Copy each file the chunk touches to your scratchpad directory. For a new file, compare against an empty file instead.
+2. Make the edit.
+3. Run the project's fast check, if it has one (for example, a type check).
+4. Give the user a review list, in reading order. For each changed block: the `file:start-end` line range, and one plain sentence on what the block does. Find the ranges with `diff -u <copy> <file>`, but do not print the diff. The user reads the code in their IDE. **Gate.**
+5. If the user asks for a change, fix only this chunk and go back to 4.
+
+Split a large new file into ordered chunks of about 50 lines. For a file that a tool generates (for example, `package-lock.json`), give a one-line summary instead of line ranges.
+
+After the last chunk, verify the whole task with real evidence: run the tests, run the app, query the output.
 
 When you cannot verify a part yourself (no permission, no device, no environment), stop and ask the user to verify it. Give the exact steps and the exact result they should see.
 
@@ -101,7 +114,12 @@ Done when the checklist and the overview both match reality.
 - **Stay inside the plan.** Every decision you make traces back to an approved plan or a user answer. A new decision is a new gate.
 - **Look before you propose.** Before every proposal, check for an existing pattern, convention, or tool in the project. Reuse it, unless it does not fit — then say why.
 - **Explain for a beginner.** Assume the user does not know the topic. Give details and an example.
+- **Keep the code light.** Write the simplest code that does the task, so the user can read every line:
+  - No new abstraction (a class, helper, or layer for future use). If you think one is needed, ask the user first.
+  - No error handling for cases that cannot happen.
+  - No refactor of code next to the change. Tell the user about messy code; it can become a new task.
+  - No new dependency.
 - **Hard guardrails** — leave these to the user:
-  - Git push: the user pushes.
+  - Git: the user runs git. Run a git command that changes the repo state (commit, push, add, stash, merge, rebase, reset, restore, checkout, branch, worktree, init) only when the user asks you to. Read-only commands (status, diff, log, show) need no permission.
   - Databases: the user runs every query. Write the query out for them.
   - Environment files (`.env` and similar): the user edits them. Give the exact line to change.
